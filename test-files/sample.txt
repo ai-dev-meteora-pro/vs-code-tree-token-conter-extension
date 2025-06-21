@@ -1,0 +1,9 @@
+This is a sample text file to test the token counter extension.
+It contains multiple lines of text that should be analyzed by the tokenizer.
+The extension should count the tokens in this file and display the count next to the filename in the VSCode explorer.
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+
+This file should have approximately 50-70 tokens depending on the tokenizer used.
