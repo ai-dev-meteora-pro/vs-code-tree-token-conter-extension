@@ -1,0 +1,101 @@
+{
+  "name": "token-counter",
+  "displayName": "Token Counter",
+  "description": "Count tokens in text files using Anthropic or OpenAI tokenizers",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "tokenCounter.refresh",
+        "title": "Refresh Token Counts",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "tokenCounter.showTokenCount",
+        "title": "Show Token Count"
+      }
+    ],
+    "configuration": {
+      "title": "Token Counter",
+      "properties": {
+        "tokenCounter.tokenizer": {
+          "type": "string",
+          "default": "anthropic",
+          "enum": [
+            "anthropic",
+            "openai"
+          ],
+          "enumDescriptions": [
+            "Use Anthropic's tokenizer (@anthropic-ai/tokenizer)",
+            "Use OpenAI's tokenizer (tiktoken)"
+          ],
+          "description": "Choose which tokenizer to use for counting tokens"
+        },
+        "tokenCounter.fileExtensions": {
+          "type": "array",
+          "default": [
+            ".txt",
+            ".md",
+            ".js",
+            ".ts",
+            ".jsx",
+            ".tsx",
+            ".py",
+            ".java",
+            ".cpp",
+            ".c",
+            ".h",
+            ".css",
+            ".html",
+            ".json",
+            ".xml",
+            ".yaml",
+            ".yml",
+            ".sql",
+            ".sh"
+          ],
+          "description": "File extensions to analyze for token counting"
+        },
+        "tokenCounter.maxFileSize": {
+          "type": "number",
+          "default": 2097152,
+          "description": "Maximum file size in bytes to analyze (default: 2MB)"
+        },
+        "tokenCounter.maxConcurrency": {
+          "type": "number",
+          "default": 8,
+          "description": "Maximum number of concurrent token counting operations"
+        },
+        "tokenCounter.showInExplorer": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show token counts in the file explorer"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/node": "16.x",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "@anthropic-ai/tokenizer": "^0.0.4",
+    "tiktoken": "^1.0.10"
+  }
+}
