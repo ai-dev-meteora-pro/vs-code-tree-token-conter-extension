@@ -214,4 +214,8 @@ export class TokenCountingService {
         }
         return null;
     }
+
+    public clearCacheForFile(filePath: string) {
+        this.cache.delete(filePath);
+    }
 }
