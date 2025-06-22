@@ -6,6 +6,9 @@ This extension shows the approximate number of LLM tokens used by text files in 
 - Counts tokens using either OpenAI or Anthropic tokenizers
 - Caches token counts based on file content
 - Updates automatically when files change
+- Shows counting progress in the status bar
+- Displays total tokens for folders once all children are processed
+- Shows cache size and saves it periodically to `.vscode/token-cache.json`
 
 ## Extension Settings
 - `tokenCounter.tokenizer`: choose `openai` or `anthropic`
