@@ -1,26 +1,30 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import * as os from 'os';
+import { TokenCountingService } from './services/TokenCountingService';
+import { CacheManager } from './services/CacheManager';
+import { TokenDecorationProvider } from './TokenDecorationProvider';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
+let decorationProvider: TokenDecorationProvider | undefined;
+
 export function activate(context: vscode.ExtensionContext) {
+    const counter = new TokenCountingService();
+    const concurrency = Math.min(16, Math.floor(os.cpus().length / 2));
+    const cache = new CacheManager(counter, concurrency);
+    decorationProvider = new TokenDecorationProvider(cache);
+    context.subscriptions.push(vscode.window.registerFileDecorationProvider(decorationProvider));
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "vs-code-tree-token-conter-extension" is now active!');
+    const watcher = vscode.workspace.createFileSystemWatcher('**/*');
+    watcher.onDidChange(uri => decorationProvider?.invalidate(uri));
+    watcher.onDidCreate(uri => decorationProvider?.invalidate(uri));
+    watcher.onDidDelete(uri => decorationProvider?.invalidate(uri));
+    context.subscriptions.push(watcher);
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('vs-code-tree-token-conter-extension.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from vs-code-tree-token-conter-extension!');
-	});
-
-	context.subscriptions.push(disposable);
+    context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
+        if (e.affectsConfiguration('tokenCounter.tokenizer')) {
+            counter.refreshConfig();
+            decorationProvider?.refreshAll();
+        }
+    }));
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() {}
