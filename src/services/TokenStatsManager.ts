@@ -4,6 +4,7 @@ import * as fs from 'fs/promises';
 import ignore from 'ignore';
 import { CacheManager } from './CacheManager';
 import { TokenDecorationProvider } from '../TokenDecorationProvider';
+import { getLocalizedStrings } from '../localization';
 
 export enum FileStatus {
     Pending = 'pending',
@@ -28,7 +29,7 @@ interface FolderData {
 export class TokenStatsManager {
     private gitignore?: ReturnType<typeof ignore>;
     
-    // Максимальный размер файла для обработки - 2MB
+    // Maximum file size for processing - 2MB
     public static readonly MAX_SIZE = 2 * 1024 * 1024;
     private fileData = new Map<string, FileData>();
     private folderData = new Map<string, FolderData>();
@@ -47,7 +48,7 @@ export class TokenStatsManager {
         if (!folders) return;
         
         this.gitignore = ignore();
-        // Добавляем стандартные игнорируемые файлы
+        // Add standard ignored files
         this.gitignore.add('.git');
         this.gitignore.add('node_modules');
         
@@ -57,7 +58,7 @@ export class TokenStatsManager {
                 const gitignoreContent = await fs.readFile(gitignorePath, 'utf8');
                 this.gitignore.add(gitignoreContent);
             } catch {
-                // .gitignore не найден, продолжаем
+                // .gitignore not found, continue
             }
         }
     }
@@ -68,7 +69,7 @@ export class TokenStatsManager {
         const folders = vscode.workspace.workspaceFolders;
         if (!folders) return false;
         
-        // Проверяем относительный путь для каждой workspace папки
+        // Check relative path for each workspace folder
         for (const folder of folders) {
             const relativePath = path.relative(folder.uri.fsPath, filePath);
             if (!relativePath.startsWith('..') && this.gitignore.ignores(relativePath)) {
@@ -135,7 +136,7 @@ export class TokenStatsManager {
         if (!data) return;
         
         try {
-            // Устанавливаем статус "обрабатывается"
+            // Set status to "processing"
             data.status = FileStatus.Processing;
             this.provider?.invalidate(vscode.Uri.file(filePath));
             
@@ -146,11 +147,12 @@ export class TokenStatsManager {
             data.processed = true;
             data.status = FileStatus.Processed;
             
-            // Отладка: проверяем что данные сохранены
-            if (Math.random() < 0.1) { // 10% файлов
-                console.log(`TokenStatsManager: обработан ${filePath}`);
-                console.log(`  Токенов: ${newTokens}, статус: ${data.status}`);
-                console.log(`  В карте: ${this.fileData.has(filePath)}`);
+            // Debug: check that data is saved
+            if (Math.random() < 0.1) { // 10% of files
+                const l10n = getLocalizedStrings();
+                console.log(l10n.processing + ' ' + filePath);
+                console.log(l10n.tokensCounted(newTokens, data.status));
+                console.log(l10n.inMap + ' ' + this.fileData.has(filePath));
             }
             
             const folder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(filePath));
@@ -176,7 +178,8 @@ export class TokenStatsManager {
                 }
             }
         } catch (error) {
-            console.error(`Ошибка обработки файла ${filePath}:`, error);
+            const l10n = getLocalizedStrings();
+            console.error(l10n.fileProcessingError(filePath, error));
             data.status = FileStatus.Error;
             data.processed = true;
             this.processedFiles++;
@@ -189,41 +192,43 @@ export class TokenStatsManager {
         const folders = vscode.workspace.workspaceFolders;
         if (!folders) return;
         
-        // Перезагружаем .gitignore на случай если он изменился
+        // Reload .gitignore in case it changed
         await this.loadGitignore();
         
         for (const folder of folders) {
             const files = await vscode.workspace.findFiles(new vscode.RelativePattern(folder, '**/*'));
             
-            // Сортируем файлы по глубине (количеству разделителей пути)
-            // Это обеспечит обработку файлов сверху вниз
+            // Sort files by depth (number of path separators)
+            // This ensures processing files from top to bottom
             const sortedFiles = files.sort((a, b) => {
                 const depthA = a.fsPath.split(path.sep).length;
                 const depthB = b.fsPath.split(path.sep).length;
                 if (depthA !== depthB) {
-                    return depthA - depthB; // Сначала файлы с меньшей глубиной
+                    return depthA - depthB; // Files with less depth first
                 }
-                // При одинаковой глубине сортируем по алфавиту
+                // For same depth, sort alphabetically
                 return a.fsPath.localeCompare(b.fsPath);
             });
             
             for (const uri of sortedFiles) {
-                // Проверяем, не игнорируется ли файл через .gitignore
+                // Check if file is ignored via .gitignore
                 if (this.isIgnored(uri.fsPath)) {
                     continue;
                 }
                 
-                // Обрабатываем все файлы, проверяем только размер
+                // Process all files, only check size
                 try {
                     const stat = await vscode.workspace.fs.stat(uri);
                     if (stat.size > TokenStatsManager.MAX_SIZE) {
-                        console.warn(`Файл ${uri.fsPath} слишком большой (${stat.size} байт), пропускаем.`);
+                        const l10n = getLocalizedStrings();
+                        console.warn(l10n.fileTooLarge(uri.fsPath, stat.size));
                         this.registerFile(uri.fsPath, FileStatus.TooLarge);
                         continue;
                     }
                     this.registerFile(uri.fsPath);
                 } catch (error) {
-                    console.error(`Ошибка при обработке файла ${uri.fsPath}:`, error);
+                    const l10n = getLocalizedStrings();
+                    console.error(l10n.fileProcessingError(uri.fsPath, error));
                     this.registerFile(uri.fsPath, FileStatus.Error);
                     continue;
                 }
@@ -231,7 +236,7 @@ export class TokenStatsManager {
         }
         this.updateStatusBar();
         
-        // Обрабатываем файлы в том же порядке (сверху вниз)
+        // Process files in the same order (top to bottom)
         const sortedPaths = Array.from(this.fileData.keys()).sort((a, b) => {
             const depthA = a.split(path.sep).length;
             const depthB = b.split(path.sep).length;
@@ -263,7 +268,7 @@ export class TokenStatsManager {
                 return;
             }
         } catch {
-            console.error(`Ошибка при получении размера файла ${uri.fsPath}, пропускаем.`);
+            console.error(`Error getting file size for ${uri.fsPath}, skipping.`);
             if (!this.fileData.has(uri.fsPath)) {
                 this.registerFile(uri.fsPath, FileStatus.Error);
                 this.updateStatusBar();

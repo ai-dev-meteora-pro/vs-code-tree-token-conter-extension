@@ -1,14 +1,34 @@
 {
-  "name": "vs-code-tree-token-conter-extension",
-  "displayName": "vs-code-tree-token-conter-extension",
-  "description": "Count files llm tokens context",
+  "name": "llm-token-counter-summarizer-devboy-pro",
+  "displayName": "LLM Token Counter Summarizer DevBoy.pro",
+  "description": "Count and summarize LLM tokens in your project files with DevBoy.pro",
   "version": "0.0.1",
+  "publisher": "devboy-pro",
   "engines": {
     "vscode": "^1.101.0"
   },
   "categories": [
+    "Programming Languages",
     "Other"
   ],
+  "keywords": [
+    "llm",
+    "tokens",
+    "token counter",
+    "openai",
+    "anthropic",
+    "ai",
+    "devboy",
+    "summarizer"
+  ],
+  "homepage": "https://devboy.pro",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/devboy-pro/llm-token-counter-summarizer"
+  },
+  "bugs": {
+    "url": "https://github.com/devboy-pro/llm-token-counter-summarizer/issues"
+  },
   "activationEvents": [
     "onStartupFinished"
   ],
@@ -17,25 +37,25 @@
     "commands": [
       {
         "command": "tokenCounter.debug",
-        "title": "Token Counter: Debug Status"
+        "title": "%tokenCounter.debug.title%"
       },
       {
         "command": "tokenCounter.refresh",
-        "title": "Refresh Token Count",
+        "title": "%tokenCounter.refresh.title%",
         "icon": "$(refresh)"
       },
       {
         "command": "tokenCounter.testDecoration",
-        "title": "Token Counter: Test File Decoration"
+        "title": "%tokenCounter.testDecoration.title%"
       }
     ],
     "views": {
       "explorer": [
         {
           "id": "tokenCounterView",
-          "name": "Token Counter",
+          "name": "%tokenCounterView.name%",
           "icon": "$(symbol-number)",
-          "contextualTitle": "Token Counter"
+          "contextualTitle": "%tokenCounterView.name%"
         }
       ]
     },
@@ -49,7 +69,7 @@
       ]
     },
     "configuration": {
-      "title": "Token Counter",
+      "title": "%tokenCounter.configuration.title%",
       "properties": {
         "tokenCounter.tokenizer": {
           "type": "string",
@@ -58,7 +78,7 @@
             "anthropic"
           ],
           "default": "openai",
-          "description": "Tokenizer to use for counting tokens"
+          "description": "%tokenCounter.tokenizer.description%"
         }
       }
     },

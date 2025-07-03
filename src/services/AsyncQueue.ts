@@ -15,8 +15,8 @@ export class AsyncQueue {
         try {
             return await task();
         } catch (error) {
-            console.error(`Ошибка при выполнении задачи:`, error);
-            return 0 as unknown as T; // Возвращаем 0 в случае ошибки, можно изменить на другое значение по необходимости
+            console.error(`Error executing task:`, error);
+            return 0 as unknown as T; // Return 0 on error, can be changed to another value if needed
         } finally {
             this.pending--;
             const next = this.queue.shift();

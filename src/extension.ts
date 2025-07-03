@@ -5,6 +5,7 @@ import { CacheManager } from './services/CacheManager';
 import { TokenDecorationProvider } from './TokenDecorationProvider';
 import { TokenStatsManager } from './services/TokenStatsManager';
 import { TokenTreeDataProvider } from './TokenTreeDataProvider';
+import { getLocalizedStrings } from './localization';
 
 let decorationProvider: TokenDecorationProvider | undefined;
 let statsManager: TokenStatsManager | undefined;
@@ -12,7 +13,8 @@ let treeDataProvider: TokenTreeDataProvider | undefined;
 let treeView: vscode.TreeView<import('./TokenTreeDataProvider').TokenFileItem> | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
-    console.log('Token Counter Extension активируется...');
+    const l10n = getLocalizedStrings();
+    console.log(l10n.extensionActivating);
     
     const counter = new TokenCountingService();
     const concurrency = Math.min(16, Math.floor(os.cpus().length / 2));
@@ -21,8 +23,8 @@ export function activate(context: vscode.ExtensionContext) {
     decorationProvider = new TokenDecorationProvider(statsManager.getFileMap(), statsManager.getFolderMap());
     statsManager.setProvider(decorationProvider);
     
-    // Отладочная проверка декораций
-    console.log('Проверяем декорации:');
+    // Debug decoration check
+    console.log(l10n.checkingDecorations);
     vscode.workspace.textDocuments.forEach(doc => {
         const decoration = decorationProvider?.provideFileDecoration(doc.uri);
         if (decoration) {
@@ -30,13 +32,13 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
     
-    // Регистрируем FileDecorationProvider
-    console.log('Регистрируем FileDecorationProvider...');
+    // Register FileDecorationProvider
+    console.log(l10n.registeringFileDecorationProvider);
     const decorationDisposable = vscode.window.registerFileDecorationProvider(decorationProvider);
     context.subscriptions.push(decorationDisposable);
-    console.log('FileDecorationProvider зарегистрирован');
+    console.log(l10n.fileDecorationProviderRegistered);
     
-    // Создаем и регистрируем TreeDataProvider
+    // Create and register TreeDataProvider
     const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
     treeDataProvider = new TokenTreeDataProvider(workspaceRoot, statsManager.getFileMap());
     treeView = vscode.window.createTreeView('tokenCounterView', {
@@ -44,11 +46,11 @@ export function activate(context: vscode.ExtensionContext) {
         showCollapseAll: true
     });
     context.subscriptions.push(treeView);
-    console.log('TreeDataProvider зарегистрирован');
+    console.log(l10n.treeDataProviderRegistered);
 
-    console.log('Начинаем сканирование workspace...');
+    console.log(l10n.startingScan);
     void statsManager.scanWorkspace().then(() => {
-        console.log('Сканирование завершено, обновляем представление');
+        console.log(l10n.scanComplete);
         decorationProvider?.updateDecorations();
         treeDataProvider?.refresh();
     });
@@ -76,37 +78,37 @@ export function activate(context: vscode.ExtensionContext) {
         }
     }));
     
-    // Регистрируем команду refresh
+    // Register refresh command
     context.subscriptions.push(vscode.commands.registerCommand('tokenCounter.refresh', () => {
-        console.log('Обновляем token counter...');
+        console.log(l10n.updatingTokenCounter);
         void statsManager?.scanWorkspace().then(() => {
             treeDataProvider?.refresh();
-            vscode.window.showInformationMessage('Token count обновлен');
+            vscode.window.showInformationMessage(l10n.tokenCountUpdated);
         });
     }));
     
-    // Тестовая команда для декораций
+    // Test decoration command
     context.subscriptions.push(vscode.commands.registerCommand('tokenCounter.testDecoration', async () => {
         const uri = vscode.window.activeTextEditor?.document.uri;
         if (!uri) {
-            vscode.window.showInformationMessage('Откройте файл для тестирования');
+            vscode.window.showInformationMessage(l10n.openFileForTesting);
             return;
         }
         
-        // Принудительно обновляем декорацию
+        // Force decoration update
         decorationProvider?.updateDecorations();
         
-        // Получаем декорацию
+        // Get decoration
         const decoration = decorationProvider?.provideFileDecoration(uri);
         
         if (decoration) {
-            vscode.window.showInformationMessage(`Декорация: badge=${decoration.badge}, tooltip=${decoration.tooltip}`);
+            vscode.window.showInformationMessage(l10n.decorationFound(decoration.badge || '', decoration.tooltip || ''));
         } else {
-            vscode.window.showWarningMessage('Декорация не найдена');
+            vscode.window.showWarningMessage(l10n.decorationNotFound);
         }
     }));
     
-    // Добавляем команду для отладки
+    // Add debug command
     context.subscriptions.push(vscode.commands.registerCommand('tokenCounter.debug', () => {
         const fileMap = statsManager?.getFileMap();
         const folderMap = statsManager?.getFolderMap();
@@ -122,7 +124,7 @@ export function activate(context: vscode.ExtensionContext) {
             });
         }
         
-        // Тестируем декорации
+        // Test decorations
         const activeFile = vscode.window.activeTextEditor?.document.uri;
         if (activeFile && decorationProvider) {
             const decoration = decorationProvider.provideFileDecoration(activeFile);

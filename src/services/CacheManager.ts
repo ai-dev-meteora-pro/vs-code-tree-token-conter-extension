@@ -4,6 +4,7 @@ import * as path from 'path';
 import { workspace } from 'vscode';
 import { TokenCountingService } from './TokenCountingService';
 import { AsyncQueue } from './AsyncQueue';
+import { getLocalizedStrings } from '../localization';
 
 export class CacheManager {
     private cache = new Map<string, { hash: string; tokens: number }>();
@@ -34,13 +35,15 @@ export class CacheManager {
             const hash = await this.computeHash(path);
             const entry = this.cache.get(path);
             if (entry && entry.hash === hash) {
-                console.log(`Кеш попадание для ${path}: ${entry.tokens} токенов`);
+                const l10n = getLocalizedStrings();
+                console.log(l10n.cacheHit(path, entry.tokens));
                 return entry.tokens;
             }
             const text = await fs.readFile(path, 'utf8');
             const tokens = this.counter.count(text);
             this.cache.set(path, { hash, tokens });
-            console.log(`Подсчитано для ${path}: ${tokens} токенов, кеш размер: ${this.cache.size}`);
+            const l10n = getLocalizedStrings();
+            console.log(l10n.counted(path, tokens, this.cache.size));
             return tokens;
         });
     }
@@ -75,9 +78,11 @@ export class CacheManager {
                     }
                 }
             }
-            console.log(`Кеш загружен из ${this.cacheFile}: ${this.cache.size} записей`);
+            const l10n = getLocalizedStrings();
+            console.log(l10n.cacheLoaded(this.cacheFile, this.cache.size));
         } catch (error) {
-            console.error(`Ошибка при загрузке кэша из файла ${this.cacheFile}:`, error);
+            const l10n = getLocalizedStrings();
+            console.error(l10n.cacheLoadError(this.cacheFile, error));
             // ignore
         }
     }
@@ -94,9 +99,11 @@ export class CacheManager {
             }
             
             await fs.writeFile(this.cacheFile, lines.join('\n'), 'utf8');
-            console.log(`Кеш сохранен в ${this.cacheFile}: ${this.cache.size} записей`);
+            const l10n = getLocalizedStrings();
+            console.log(l10n.cacheSaved(this.cacheFile, this.cache.size));
         } catch (error) {
-            console.error(`Ошибка при сохранении кэша в файл ${this.cacheFile}:`, error);
+            const l10n = getLocalizedStrings();
+            console.error(l10n.cacheSaveError(this.cacheFile, error));
             // ignore
         }
     }

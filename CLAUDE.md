@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Это расширение VS Code для подсчета токенов LLM (Large Language Model) в файлах проекта. Расширение показывает количество токенов рядом с именами файлов в Explorer и поддерживает tokenizer'ы от OpenAI и Anthropic.
+**LLM Token Counter Summarizer DevBoy.pro** - это мощное расширение VS Code для подсчета и суммирования токенов LLM (Large Language Model) в файлах проекта. Расширение показывает количество токенов рядом с именами файлов в Explorer и поддерживает tokenizer'ы от OpenAI и Anthropic. Разработано DevBoy.pro.
 
 ## Commands
 

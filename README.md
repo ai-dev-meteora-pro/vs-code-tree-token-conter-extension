@@ -1,16 +1,22 @@
-# VS Code Token Counter
+# LLM Token Counter Summarizer DevBoy.pro
 
-This extension shows the approximate number of LLM tokens used by text files in your workspace. Token counts appear as small badges next to file names in the explorer.
+A powerful VS Code extension by DevBoy.pro that counts and summarizes LLM tokens in your project files. Token counts appear as small badges next to file names in the explorer, helping developers understand their code's token footprint for AI models.
 
 ## Features
-- Counts tokens using either OpenAI or Anthropic tokenizers
-- Processes all files under 2MB regardless of file extension
-- Respects `.gitignore` patterns when scanning files
-- Caches token counts based on file content (SHA-256 hash)
-- Updates automatically when files change
-- Shows counting progress in the status bar
-- Displays total tokens for folders once all children are processed
-- Shows cache size and saves it periodically to `.vscode/token-cache.txt`
+
+### 🚀 Core Features
+- **Multi-Model Support**: Counts tokens using either OpenAI or Anthropic tokenizers
+- **Universal File Processing**: Processes all files under 2MB regardless of file extension
+- **Smart Filtering**: Respects `.gitignore` patterns when scanning files
+- **Performance Optimized**: Caches token counts based on file content (SHA-256 hash)
+- **Real-time Updates**: Automatically recounts when files change
+- **Progress Tracking**: Shows counting progress in the status bar
+- **Folder Summaries**: Displays total tokens for folders once all children are processed
+- **Persistent Cache**: Saves cache periodically to `.vscode/token-cache.txt`
+
+### 🌍 Internationalization
+- Full support for English and Russian languages
+- Automatically uses VS Code's language setting
 
 ## Badge Notation
 

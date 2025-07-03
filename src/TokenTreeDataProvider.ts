@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { getLocalizedStrings, formatNumber } from './localization';
 
 export interface TokenFileItem {
     resourceUri: vscode.Uri;
@@ -20,25 +21,26 @@ export class TokenTreeDataProvider implements vscode.TreeDataProvider<TokenFileI
     }
 
     getTreeItem(element: TokenFileItem): vscode.TreeItem {
+        const l10n = getLocalizedStrings();
         const item = new vscode.TreeItem(
             element.resourceUri,
             vscode.TreeItemCollapsibleState.None
         );
 
-        // Устанавливаем описание с количеством токенов
+        // Set description with token count
         switch (element.status) {
             case 'processed':
-                item.description = `${element.tokens} tokens`;
+                item.description = l10n.tokensTooltip(formatNumber(element.tokens));
                 break;
             case 'pending':
             case 'processing':
-                item.description = '• counting...';
+                item.description = `• ${l10n.countingTokens}`;
                 break;
             case 'error':
-                item.description = '⚠ error';
+                item.description = `⚠ ${l10n.errorTooltip}`;
                 break;
             case 'too_large':
-                item.description = '∞ too large';
+                item.description = `∞ ${l10n.fileTooLargeTooltip}`;
                 break;
         }
 
@@ -54,15 +56,16 @@ export class TokenTreeDataProvider implements vscode.TreeDataProvider<TokenFileI
 
     getChildren(element?: TokenFileItem): Thenable<TokenFileItem[]> {
         if (!this.workspaceRoot) {
-            vscode.window.showInformationMessage('No workspace folder open');
+            const l10n = getLocalizedStrings();
+            vscode.window.showInformationMessage(l10n.noWorkspaceFolder);
             return Promise.resolve([]);
         }
 
         if (element) {
-            // Если элемент передан, возвращаем пустой массив (у нас нет вложенности)
+            // If element is provided, return empty array (we have no nesting)
             return Promise.resolve([]);
         } else {
-            // Возвращаем список всех файлов с токенами
+            // Return list of all files with tokens
             const items: TokenFileItem[] = [];
             
             for (const [filePath, data] of this.fileData) {
@@ -75,7 +78,7 @@ export class TokenTreeDataProvider implements vscode.TreeDataProvider<TokenFileI
                 }
             }
 
-            // Сортируем по количеству токенов (по убыванию)
+            // Sort by token count (descending)
             items.sort((a, b) => b.tokens - a.tokens);
             
             return Promise.resolve(items);
