@@ -40,7 +40,7 @@ export class CacheManager {
                 return entry.tokens;
             }
             const text = await fs.readFile(path, 'utf8');
-            const tokens = this.counter.count(text);
+            const tokens = await this.counter.count(text);
             this.cache.set(path, { hash, tokens });
             const l10n = getLocalizedStrings();
             console.log(l10n.counted(path, tokens, this.cache.size));

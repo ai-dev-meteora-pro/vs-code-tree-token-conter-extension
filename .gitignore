@@ -5,3 +5,4 @@ node_modules
 *.vsix
 .vscode/token-cache.txt
 .vscode/token-cache.json
+.DS_Store

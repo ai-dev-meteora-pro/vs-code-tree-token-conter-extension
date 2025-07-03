@@ -1,7 +1,7 @@
 {
   "displayName": "LLM Token Counter Summarizer DevBoy.pro",
   "description": "Подсчет и суммирование токенов LLM в файлах проекта с DevBoy.pro",
-  "tokenCounter.tokenizer.description": "Tokenizer для подсчета токенов (OpenAI или Anthropic)",
+  "tokenCounter.encoding.description": "Кодировка для подсчета токенов (разные модели используют разные кодировки)",
   "tokenCounter.debug.title": "DevBoy.pro Token Counter: Отладочная информация",
   "tokenCounter.refresh.title": "DevBoy.pro: Обновить подсчет токенов",
   "tokenCounter.testDecoration.title": "DevBoy.pro Token Counter: Тест декорации файла",

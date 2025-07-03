@@ -1,7 +1,7 @@
 {
   "displayName": "LLM Token Counter Summarizer DevBoy.pro",
   "description": "Count and summarize LLM tokens in your project files with DevBoy.pro",
-  "tokenCounter.tokenizer.description": "Tokenizer to use for counting tokens (OpenAI or Anthropic)",
+  "tokenCounter.encoding.description": "Encoding to use for token counting (different models use different encodings)",
   "tokenCounter.debug.title": "DevBoy.pro Token Counter: Debug Status",
   "tokenCounter.refresh.title": "DevBoy.pro: Refresh Token Count",
   "tokenCounter.testDecoration.title": "DevBoy.pro Token Counter: Test File Decoration",

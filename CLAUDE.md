@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-**LLM Token Counter Summarizer DevBoy.pro** - это мощное расширение VS Code для подсчета и суммирования токенов LLM (Large Language Model) в файлах проекта. Расширение показывает количество токенов рядом с именами файлов в Explorer и поддерживает tokenizer'ы от OpenAI и Anthropic. Разработано DevBoy.pro.
+**LLM Token Counter Summarizer DevBoy.pro** - это мощное расширение VS Code для подсчета и суммирования токенов LLM (Large Language Model) в файлах проекта. Расширение показывает количество токенов рядом с именами файлов в Explorer и поддерживает различные кодировки OpenAI. Использует js-tiktoken для быстрого и надежного подсчета. Разработано DevBoy.pro.
 
 ## Commands
 
@@ -28,8 +28,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Core Services
 
 1. **TokenCountingService** (`src/services/tokenCountingService.ts`)
-   - Сервис для подсчета токенов с поддержкой OpenAI (tiktoken) и Anthropic tokenizers
-   - Выбор tokenizer'а через настройку `tokenCounter.tokenizer`
+   - Сервис для подсчета токенов с использованием js-tiktoken
+   - Поддержка различных кодировок: cl100k_base, o200k_base, p50k_base, r50k_base
+   - Выбор кодировки через настройку `tokenCounter.encoding`
 
 2. **CacheManager** (`src/services/cacheManager.ts`)
    - Кеширование результатов подсчета на основе SHA-256 хеша файла
@@ -56,7 +57,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Configuration
 
 Расширение поддерживает следующие настройки:
-- `tokenCounter.tokenizer`: выбор между "openai" и "anthropic" (по умолчанию "openai")
+- `tokenCounter.encoding`: выбор кодировки для подсчета токенов:
+  - `cl100k_base` (по умолчанию) - для GPT-4, GPT-3.5-turbo, text-embedding-ada-002
+  - `o200k_base` - для GPT-4o моделей
+  - `p50k_base` - для text-davinci-003, text-davinci-002, text-davinci-001
+  - `r50k_base` - для GPT-3 davinci, curie, babbage, ada
 
 ## Badge Notation
 

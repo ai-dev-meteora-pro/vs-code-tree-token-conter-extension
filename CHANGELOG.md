@@ -6,7 +6,8 @@ All notable changes to the "LLM Token Counter Summarizer DevBoy.pro" extension w
 
 ### Initial Release
 - 🚀 First release of LLM Token Counter Summarizer DevBoy.pro
-- ✨ Token counting using OpenAI and Anthropic tokenizers
+- ✨ Token counting using js-tiktoken with multiple encoding support
+- 🎯 Model-specific tokenization (GPT-4, GPT-4o, GPT-3.5, GPT-3)
 - 📊 Compact badge notation for displaying token counts (2-character limit)
 - 🗂️ Process all files under 2MB regardless of extension
 - 🔍 Respect .gitignore patterns
@@ -17,6 +18,8 @@ All notable changes to the "LLM Token Counter Summarizer DevBoy.pro" extension w
 - 🎨 Custom TreeDataProvider for token visualization
 - ⚡ Performance optimized with concurrent processing
 - 📈 Progress tracking in status bar
+- 🛠️ Pure JavaScript implementation (no native dependencies)
+- 🌐 Compatible with web-based VS Code environments
 
 ### Badge Notation
 - `0` - 0 tokens
@@ -31,6 +34,12 @@ All notable changes to the "LLM Token Counter Summarizer DevBoy.pro" extension w
 - `•` - Processing
 - `⚠` - Error
 - `∞` - File too large (>2MB)
+
+### Supported Encodings
+- `cl100k_base` - GPT-4, GPT-3.5-turbo, text-embedding-ada-002
+- `o200k_base` - GPT-4o models
+- `p50k_base` - text-davinci-003, text-davinci-002, text-davinci-001
+- `r50k_base` - GPT-3 davinci, curie, babbage, ada
 
 ---
 Made with ❤️ by DevBoy.pro

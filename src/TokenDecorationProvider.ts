@@ -67,12 +67,24 @@ export class TokenDecorationProvider implements vscode.FileDecorationProvider {
 
         // Check folder data
         const folderData = this.folders.get(uri.fsPath);
-        if (folderData && folderData.remaining === 0 && folderData.tokenSum > 0) {
-            const badge = this.formatTokenCount(folderData.tokenSum);
-            return {
-                badge: badge,
-                tooltip: l10n.totalTokensTooltip(formatNumber(folderData.tokenSum))
-            };
+        if (folderData) {
+            if (folderData.tokenSum > 0) {
+                // Show token count even if still processing
+                const badge = this.formatTokenCount(folderData.tokenSum);
+                const tooltip = folderData.remaining > 0 
+                    ? `${formatNumber(folderData.tokenSum)} tokens (${folderData.remaining} files still processing)`
+                    : l10n.totalTokensTooltip(formatNumber(folderData.tokenSum));
+                return {
+                    badge: badge,
+                    tooltip: tooltip
+                };
+            } else if (folderData.remaining > 0) {
+                // Processing but no tokens counted yet
+                return {
+                    badge: '•',
+                    tooltip: `Processing ${folderData.remaining} files...`
+                };
+            }
         }
 
         return undefined;

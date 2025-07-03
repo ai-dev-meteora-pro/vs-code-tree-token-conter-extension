@@ -124,10 +124,16 @@ export class TokenStatsManager {
         this.totalFiles++;
         const folder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(filePath));
         if (!folder) return;
-        for (const dir of this.getAncestors(filePath, folder.uri.fsPath)) {
+        
+        const ancestors = this.getAncestors(filePath, folder.uri.fsPath);
+        console.log(`TokenStatsManager: Registering file ${filePath}`);
+        console.log(`TokenStatsManager: Ancestors: ${ancestors.join(', ')}`);
+        
+        for (const dir of ancestors) {
             const info = this.folderData.get(dir) ?? { tokenSum: 0, remaining: 0 };
             info.remaining++;
             this.folderData.set(dir, info);
+            console.log(`TokenStatsManager: Updated folder ${dir} - remaining: ${info.remaining}, tokenSum: ${info.tokenSum}`);
         }
     }
 
@@ -159,12 +165,16 @@ export class TokenStatsManager {
             if (folder) {
                 for (const dir of this.getAncestors(filePath, folder.uri.fsPath)) {
                     const info = this.folderData.get(dir);
-                    if (!info) continue;
+                    if (!info) {
+                        console.log(`TokenStatsManager: WARNING - No folder info for ${dir}`);
+                        continue;
+                    }
                     info.tokenSum += newTokens - oldTokens;
                     if (first) {
                         info.remaining = Math.max(0, info.remaining - 1);
                     }
                     this.folderData.set(dir, info);
+                    console.log(`TokenStatsManager: Updated folder ${dir} after processing file - remaining: ${info.remaining}, tokenSum: ${info.tokenSum}`);
                 }
             }
             if (first) {
