@@ -4,6 +4,7 @@
   "description": "Count and summarize LLM tokens in your project files with DevBoy.pro",
   "version": "0.0.1",
   "publisher": "devboy-pro",
+  "license": "MIT",
   "engines": {
     "vscode": "^1.101.0"
   },
@@ -137,7 +138,9 @@
     "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint",
     "check-types": "tsc --noEmit",
     "lint": "eslint src",
-    "test": "mocha \"out/test/**/*.test.js\""
+    "test": "mocha \"out/test/**/*.test.js\"",
+    "vsce-package": "vsce package",
+    "vsce-publish": "vsce publish"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
@@ -147,6 +150,7 @@
     "@typescript-eslint/parser": "^8.31.1",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.6.0",
     "esbuild": "^0.25.3",
     "eslint": "^9.25.1",
     "mocha": "^11.7.0",
