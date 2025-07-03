@@ -5,13 +5,8 @@ import { workspace } from 'vscode';
 import { TokenCountingService } from './TokenCountingService';
 import { AsyncQueue } from './AsyncQueue';
 
-interface CacheEntry {
-    hash: string;
-    tokens: number;
-}
-
 export class CacheManager {
-    private cache = new Map<string, CacheEntry>();
+    private cache = new Map<string, { hash: string; tokens: number }>();
     private queue: AsyncQueue;
     private cacheFile: string | undefined;
     private saveInterval: NodeJS.Timeout | undefined;
@@ -21,7 +16,7 @@ export class CacheManager {
 
         const folder = workspace.workspaceFolders?.[0];
         if (folder) {
-            this.cacheFile = path.join(folder.uri.fsPath, '.vscode', 'token-cache.json');
+            this.cacheFile = path.join(folder.uri.fsPath, '.vscode', 'token-cache.txt');
             void this.loadFromFile();
             this.saveInterval = setInterval(() => {
                 void this.saveToFile();
@@ -39,11 +34,13 @@ export class CacheManager {
             const hash = await this.computeHash(path);
             const entry = this.cache.get(path);
             if (entry && entry.hash === hash) {
+                console.log(`Кеш попадание для ${path}: ${entry.tokens} токенов`);
                 return entry.tokens;
             }
             const text = await fs.readFile(path, 'utf8');
             const tokens = this.counter.count(text);
             this.cache.set(path, { hash, tokens });
+            console.log(`Подсчитано для ${path}: ${tokens} токенов, кеш размер: ${this.cache.size}`);
             return tokens;
         });
     }
@@ -59,10 +56,28 @@ export class CacheManager {
     private async loadFromFile(): Promise<void> {
         if (!this.cacheFile) return;
         try {
-            const buf = await fs.readFile(this.cacheFile, 'utf8');
-            const data = JSON.parse(buf) as Record<string, CacheEntry>;
-            this.cache = new Map(Object.entries(data));
-        } catch {
+            const content = await fs.readFile(this.cacheFile, 'utf8');
+            const lines = content.split('\n').filter(line => line.trim());
+            
+            this.cache.clear();
+            for (const line of lines) {
+                const colonIndex = line.indexOf(':');
+                const lastColonIndex = line.lastIndexOf(':');
+                
+                if (colonIndex !== -1 && lastColonIndex !== -1 && colonIndex !== lastColonIndex) {
+                    const tokensStr = line.substring(0, colonIndex);
+                    const filename = line.substring(colonIndex + 1, lastColonIndex);
+                    const hash = line.substring(lastColonIndex + 1);
+                    
+                    const tokens = parseInt(tokensStr, 10);
+                    if (!isNaN(tokens)) {
+                        this.cache.set(filename, { hash, tokens });
+                    }
+                }
+            }
+            console.log(`Кеш загружен из ${this.cacheFile}: ${this.cache.size} записей`);
+        } catch (error) {
+            console.error(`Ошибка при загрузке кэша из файла ${this.cacheFile}:`, error);
             // ignore
         }
     }
@@ -71,9 +86,17 @@ export class CacheManager {
         if (!this.cacheFile) return;
         try {
             await fs.mkdir(path.dirname(this.cacheFile), { recursive: true });
-            const obj = Object.fromEntries(this.cache);
-            await fs.writeFile(this.cacheFile, JSON.stringify(obj), 'utf8');
-        } catch {
+            
+            const lines: string[] = [];
+            for (const [filename, entry] of this.cache) {
+                const paddedTokens = entry.tokens.toString().padStart(5, '0');
+                lines.push(`${paddedTokens}:${filename}:${entry.hash}`);
+            }
+            
+            await fs.writeFile(this.cacheFile, lines.join('\n'), 'utf8');
+            console.log(`Кеш сохранен в ${this.cacheFile}: ${this.cache.size} записей`);
+        } catch (error) {
+            console.error(`Ошибка при сохранении кэша в файл ${this.cacheFile}:`, error);
             // ignore
         }
     }

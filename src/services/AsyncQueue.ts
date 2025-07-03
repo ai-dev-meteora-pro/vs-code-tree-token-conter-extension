@@ -14,6 +14,9 @@ export class AsyncQueue {
         this.pending++;
         try {
             return await task();
+        } catch (error) {
+            console.error(`Ошибка при выполнении задачи:`, error);
+            return 0 as unknown as T; // Возвращаем 0 в случае ошибки, можно изменить на другое значение по необходимости
         } finally {
             this.pending--;
             const next = this.queue.shift();

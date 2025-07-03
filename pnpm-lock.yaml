@@ -11,6 +11,9 @@ importers:
       '@anthropic-ai/tokenizer':
         specifier: ^0.0.4
         version: 0.0.4
+      ignore:
+        specifier: ^7.0.5
+        version: 7.0.5
       tiktoken:
         specifier: ^1.0.21
         version: 1.0.21
@@ -19,7 +22,7 @@ importers:
         specifier: ^10.0.10
         version: 10.0.10
       '@types/node':
-        specifier: 20.x
+        specifier: ~20.19.1
         version: 20.19.1
       '@types/vscode':
         specifier: ^1.101.0
