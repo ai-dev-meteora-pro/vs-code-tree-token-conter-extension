@@ -1,0 +1,10 @@
+{
+  "displayName": "LLM Token Counter Summarizer DevBoy.pro",
+  "description": "Count and summarize LLM tokens in your project files with DevBoy.pro",
+  "tokenCounter.encoding.description": "Encoding to use for token counting (different models use different encodings)",
+  "tokenCounter.debug.title": "DevBoy.pro Token Counter: Debug Status",
+  "tokenCounter.refresh.title": "DevBoy.pro: Refresh Token Count",
+  "tokenCounter.testDecoration.title": "DevBoy.pro Token Counter: Test File Decoration",
+  "tokenCounter.configuration.title": "DevBoy.pro Token Counter",
+  "tokenCounterView.name": "DevBoy.pro Tokens"
+}

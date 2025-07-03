@@ -14,6 +14,9 @@ export class AsyncQueue {
         this.pending++;
         try {
             return await task();
+        } catch (error) {
+            console.error(`Error executing task:`, error);
+            return 0 as unknown as T; // Return 0 on error, can be changed to another value if needed
         } finally {
             this.pending--;
             const next = this.queue.shift();

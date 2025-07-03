@@ -1,30 +1,138 @@
 {
-  "name": "vs-code-tree-token-conter-extension",
-  "displayName": "vs-code-tree-token-conter-extension",
-  "description": "Count files llm tokens context",
+  "name": "llm-token-counter-summarizer-devboy-pro",
+  "displayName": "LLM Token Counter Summarizer DevBoy.pro",
+  "description": "Count and summarize LLM tokens in your project files with DevBoy.pro",
   "version": "0.0.1",
+  "publisher": "AndreiMazniak",
+  "license": "MIT",
   "engines": {
     "vscode": "^1.101.0"
   },
   "categories": [
+    "Programming Languages",
     "Other"
   ],
+  "keywords": [
+    "llm",
+    "tokens",
+    "token counter",
+    "openai",
+    "anthropic",
+    "ai",
+    "devboy",
+    "summarizer"
+  ],
+  "homepage": "https://devboy.pro",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ai-dev-meteora-pro/vs-code-tree-token-conter-extension"
+  },
+  "bugs": {
+    "url": "https://github.com/ai-dev-meteora-pro/vs-code-tree-token-conter-extension/issues"
+  },
   "activationEvents": [
     "onStartupFinished"
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "commands": [
+      {
+        "command": "tokenCounter.debug",
+        "title": "%tokenCounter.debug.title%"
+      },
+      {
+        "command": "tokenCounter.refresh",
+        "title": "%tokenCounter.refresh.title%",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "tokenCounter.testDecoration",
+        "title": "%tokenCounter.testDecoration.title%"
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "tokenCounterView",
+          "name": "%tokenCounterView.name%",
+          "icon": "$(symbol-number)",
+          "contextualTitle": "%tokenCounterView.name%"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "tokenCounter.refresh",
+          "when": "view == tokenCounterView",
+          "group": "navigation"
+        }
+      ]
+    },
     "configuration": {
-      "title": "Token Counter",
+      "title": "%tokenCounter.configuration.title%",
       "properties": {
-        "tokenCounter.tokenizer": {
+        "tokenCounter.encoding": {
           "type": "string",
-          "enum": ["openai", "anthropic"],
-          "default": "openai",
-          "description": "Tokenizer to use for counting tokens"
+          "enum": [
+            "cl100k_base",
+            "o200k_base",
+            "p50k_base",
+            "r50k_base"
+          ],
+          "enumDescriptions": [
+            "GPT-4, GPT-3.5-turbo, text-embedding-ada-002",
+            "GPT-4o models",
+            "text-davinci-003, text-davinci-002, text-davinci-001",
+            "GPT-3 davinci, curie, babbage, ada"
+          ],
+          "default": "cl100k_base",
+          "description": "%tokenCounter.encoding.description%"
         }
       }
-    }
+    },
+    "colors": [
+      {
+        "id": "tokenCounter.pendingColor",
+        "description": "Color for files pending token count",
+        "defaults": {
+          "dark": "#888888",
+          "light": "#888888"
+        }
+      },
+      {
+        "id": "tokenCounter.processedColor",
+        "description": "Color for files with counted tokens",
+        "defaults": {
+          "dark": "#4EC9B0",
+          "light": "#267f99"
+        }
+      },
+      {
+        "id": "tokenCounter.errorColor",
+        "description": "Color for files with token count errors",
+        "defaults": {
+          "dark": "#F48771",
+          "light": "#CD3131"
+        }
+      },
+      {
+        "id": "tokenCounter.tooLargeColor",
+        "description": "Color for files too large to count",
+        "defaults": {
+          "dark": "#DCDCAA",
+          "light": "#795E26"
+        }
+      },
+      {
+        "id": "tokenCounter.folderColor",
+        "description": "Color for folders with token sum",
+        "defaults": {
+          "dark": "#569CD6",
+          "light": "#0000FF"
+        }
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "pnpm run package",
@@ -38,23 +146,27 @@
     "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint",
     "check-types": "tsc --noEmit",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "mocha \"out/test/**/*.test.js\"",
+    "vsce-package": "vsce package",
+    "vsce-publish": "vsce publish",
+    "build-vsix": "pnpm run package && pnpm exec vsce package",
+    "clean-build-vsix": "rm -f *.vsix && pnpm run build-vsix"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
-    "@types/node": "20.x",
+    "@types/node": "~20.19.1",
     "@types/vscode": "^1.101.0",
     "@typescript-eslint/eslint-plugin": "^8.31.1",
     "@typescript-eslint/parser": "^8.31.1",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.6.0",
     "esbuild": "^0.25.3",
     "eslint": "^9.25.1",
+    "ignore": "^7.0.5",
+    "js-tiktoken": "^1.0.20",
+    "mocha": "^11.7.0",
     "npm-run-all": "^4.1.5",
     "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "@anthropic-ai/tokenizer": "^0.0.4",
-    "tiktoken": "^1.0.21"
   }
 }
