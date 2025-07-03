@@ -93,9 +93,12 @@ export class TokenDecorationProvider implements vscode.FileDecorationProvider {
         } else if (tokens < 10000000) {
             // 1m-9m: показываем как *1-*9 (миллионы)
             return '*' + Math.round(tokens / 1000000);
+        } else if (tokens < 100000000) {
+            // 10m-99m: показываем как 1∞-9∞ (десятки миллионов)
+            return Math.floor(tokens / 10000000) + '∞';
         } else {
-            // 10m+: показываем символ бесконечности
-            return '∞';
+            // 100m+: показываем два символа бесконечности
+            return '∞∞';
         }
     }
 

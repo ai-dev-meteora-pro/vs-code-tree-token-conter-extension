@@ -23,9 +23,11 @@ Due to VS Code's 2-character limit for file decoration badges, token counts are 
 | 1,000-99,999 | `1` to `99` | `2` = ~2,000 tokens, `15` = ~15,000 tokens |
 | 100,000-999,999 | `^1` to `^9` | `^2` = ~200,000 tokens, `^5` = ~500,000 tokens |
 | 1,000,000-9,999,999 | `*1` to `*9` | `*1` = ~1 million tokens, `*3` = ~3 million tokens |
-| 10,000,000+ | `∞` | More than 10 million tokens |
+| 10,000,000-99,999,999 | `1∞` to `9∞` | `1∞` = ~10 million tokens, `5∞` = ~50 million tokens |
+| 100,000,000+ | `∞∞` | More than 100 million tokens |
 
 Special badges:
+
 - `•` - File is being processed
 - `⚠` - Error occurred during token counting
 - `∞` - File is too large to process (>2MB)
