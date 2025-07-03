@@ -47,7 +47,7 @@ export class TokenDecorationProvider implements vscode.FileDecorationProvider {
                     const badge = this.formatTokenCount(fileData.tokens);
                     return {
                         badge: badge,
-                        tooltip: `${fileData.tokens} токенов`
+                        tooltip: `${this.formatNumber(fileData.tokens)} токенов`
                     };
                 case FileStatus.Error:
                     return {
@@ -68,11 +68,18 @@ export class TokenDecorationProvider implements vscode.FileDecorationProvider {
             const badge = this.formatTokenCount(folderData.tokenSum);
             return {
                 badge: badge,
-                tooltip: `Всего токенов: ${folderData.tokenSum}`
+                tooltip: `Всего токенов: ${this.formatNumber(folderData.tokenSum)}`
             };
         }
 
         return undefined;
+    }
+
+    /**
+     * Форматирует число с разделителями тысяч
+     */
+    private formatNumber(num: number): string {
+        return num.toLocaleString('ru-RU');
     }
 
     /**
